@@ -7,6 +7,7 @@ import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { UsersModule } from '../users/users.module';
 import { JwtStrategy } from './jwt.strategy';
+import { RolesGuard } from './roles.guard';
 
 @Module({
   imports: [
@@ -20,8 +21,13 @@ import { JwtStrategy } from './jwt.strategy';
         const secret = configService.get<string>('JWT_SECRET');
         const expiresIn = configService.get<string>('JWT_EXPIRES_IN');
 
-        if (!secret) throw new Error('JWT_SECRET missing');
-        if (!expiresIn) throw new Error('JWT_EXPIRES_IN missing');
+        if (!secret) {
+          throw new Error('JWT_SECRET missing');
+        }
+
+        if (!expiresIn) {
+          throw new Error('JWT_EXPIRES_IN missing');
+        }
 
         return {
           secret,
@@ -32,7 +38,8 @@ import { JwtStrategy } from './jwt.strategy';
       },
     }),
   ],
-  providers: [AuthService, JwtStrategy],
+  providers: [AuthService, JwtStrategy, RolesGuard],
   controllers: [AuthController],
+  exports: [RolesGuard],
 })
 export class AuthModule {}

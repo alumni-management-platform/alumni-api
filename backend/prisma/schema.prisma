@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+  DATA_ADMIN
+  ALUMNI
+}
+
+enum EmploymentType {
+  JOB
+  BUSINESS
+  SELF_EMPLOYED
+  AGRICULTURE
+  UNEMPLOYED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  password  String
+  role      Role     @default(ALUMNI)
+
+  alumni    Alumni?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Alumni {
+  id        Int      @id @default(autoincrement())
+
+  // Identity
+  firstName String
+  lastName  String
+
+  // Education
+  entryBatchYear  Int
+  passOutBatchYear Int
+  rollNumber      String?
+  houseNumber     String?
+
+  // Employment
+  employmentType EmploymentType
+  currentCompany String?
+  sector         String?
+
+  // Contact
+  countryCode    String
+  phoneNumber    String
+  alternateName  String?
+  alternatePhone String?
+
+  // Location (global support)
+  permanentAddress Json
+  currentAddress   Json
+
+  // Profile
+  photoUrl String?
+
+  // Relations
+  userId Int   @unique
+  user   User  @relation(fields: [userId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
